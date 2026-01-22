@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirigiendo a Carmay Outfit...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <p>Si no eres redirigido en 2 segundos, <a id="fallback" href="https://www.facebook.com/carmayoutfittiendaonline">haz clic aquí</a>.</p>
+
+    <script>
+        const appUrl = "fb://facewebmodal/f?href=https://www.facebook.com/carmayoutfittiendaonline";
+        const webUrl = "https://www.facebook.com/carmayoutfittiendaonline";
+        
+        // 1. Intentar abrir la App
+        window.location.href = appUrl;
+
+        // 2. Fallback: Si después de 1.5 segundos seguimos aquí, ir a la Web
+        setTimeout(function() {
+            window.location.href = webUrl;
+        }, 1500);
+    </script>
+</body>
+</html>
