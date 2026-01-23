@@ -1,24 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Redirigiendo a Carmay Outfit...</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abriendo Carmay Outfit...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        /* Estilo del logo con efecto palpitante */
+        .logo {
+            width: 150px; /* Ajusta según el tamaño de tu logo */
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .loader-text {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-top: 10px;
+            color: #666;
+        }
+
+        .fallback-link {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #0084ff;
+            text-decoration: none;
+            display: none; /* Se muestra solo si falla la redirección */
+        }
+
+        /* Spinner discreto opcional */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0084ff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <p>Si no eres redirigido en 2 segundos, <a id="fallback" href="https://www.facebook.com/carmayoutfittiendaonline">haz clic aquí</a>.</p>
+
+    <div class="container">
+        <img src="nuevo-logo.png" alt="Carmay Outfit" class="logo">
+        
+        <div class="loader-text">
+            Conectando con Facebook <div class="spinner"></div>
+        </div>
+
+        <a id="fallback" href="https://www.facebook.com/carmayoutfittiendaonline" class="fallback-link">
+            ¿No fuiste redirigido? Haz clic aquí
+        </a>
+    </div>
 
     <script>
         const appUrl = "fb://facewebmodal/f?href=https://www.facebook.com/carmayoutfittiendaonline";
         const webUrl = "https://www.facebook.com/carmayoutfittiendaonline";
         
-        // 1. Intentar abrir la App
+        const fallbackBtn = document.getElementById('fallback');
+        let redirectTriggered = false;
+
+        // Intentar abrir la App inmediatamente
         window.location.href = appUrl;
 
-        // 2. Fallback: Si después de 1.5 segundos seguimos aquí, ir a la Web
-        setTimeout(function() {
-            window.location.href = webUrl;
-        }, 1500);
+        // Mostrar el enlace manual después de 3 segundos por si acaso
+        setTimeout(() => {
+            fallbackBtn.style.display = 'inline-block';
+        }, 3000);
+
+        // Lógica de redirección automática al navegador
+        const timeout = setTimeout(() => {
+            if (!document.hidden && !redirectTriggered) {
+                window.location.href = webUrl;
+            }
+        }, 2000);
+
+        // Si el usuario sale de la pestaña (porque la app se abrió), cancelamos el timeout
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                clearTimeout(timeout);
+                redirectTriggered = true;
+            }
+        });
     </script>
 </body>
 </html>
