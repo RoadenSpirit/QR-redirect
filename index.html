@@ -22,9 +22,8 @@
             text-align: center;
         }
 
-        /* Estilo del logo con efecto palpitante */
         .logo {
-            width: 150px; /* Ajusta según el tamaño de tu logo */
+            width: 150px;
             height: auto;
             margin-bottom: 20px;
             animation: pulse 2s infinite ease-in-out;
@@ -48,10 +47,9 @@
             font-size: 0.9rem;
             color: #0084ff;
             text-decoration: none;
-            display: none; /* Se muestra solo si falla la redirección */
+            display: none;
         }
 
-        /* Spinner discreto opcional */
         .spinner {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #0084ff;
@@ -91,22 +89,22 @@
         const fallbackBtn = document.getElementById('fallback');
         let redirectTriggered = false;
 
-        // Intentar abrir la App inmediatamente
+        // 1. Intentar abrir la App
         window.location.href = appUrl;
 
-        // Mostrar el enlace manual después de 3 segundos por si acaso
+        // Mostrar enlace de auxilio tras 3s
         setTimeout(() => {
             fallbackBtn.style.display = 'inline-block';
         }, 3000);
 
-        // Lógica de redirección automática al navegador
+        // 2. Redirección automática si sigue en la página tras 2s
         const timeout = setTimeout(() => {
             if (!document.hidden && !redirectTriggered) {
                 window.location.href = webUrl;
             }
         }, 2000);
 
-        // Si el usuario sale de la pestaña (porque la app se abrió), cancelamos el timeout
+        // 3. Detener todo si el usuario saltó con éxito a la App
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) {
                 clearTimeout(timeout);
@@ -114,10 +112,11 @@
             }
         });
     </script>
-    
+
     <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
+
 </body>
 </html>
