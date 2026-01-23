@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abriendo Carmay Outfit...</title>
     <style>
+        /* Estilos base para la página */
         body {
             margin: 0;
             padding: 0;
@@ -13,82 +14,148 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #ffffff;
+            /* Color de fondo adaptable: claro por defecto */
+            background-color: #ffffff; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: #333;
+            transition: background-color 0.3s, color 0.3s; /* Transición suave */
         }
-        .container { text-align: center; }
-        .logo {
-            width: 150px;
-            height: auto;
-            margin-bottom: 20px;
+
+        /* Detección y estilos para el modo oscuro del sistema */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212; /* Fondo oscuro para el resto de la página */
+                color: #e0e0e0; /* Texto claro */
+            }
+            .loader-text {
+                color: #b0b0b0; /* Texto de carga más claro en modo oscuro */
+            }
+            .fallback-link {
+                color: #4da3ff; /* Enlace azul más claro en modo oscuro */
+            }
+            /* El spinner se adapta al modo oscuro */
+            .spinner {
+                border: 3px solid rgba(255, 255, 255, 0.1);
+                border-top: 3px solid #4da3ff;
+            }
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* NUEVO ESTILO: Contenedor para el logo */
+        .logo-container {
+            /* Fondo siempre claro para garantizar contraste con el logo negro */
+            background-color: #ffffff; 
+            padding: 20px 25px; /* Espacio alrededor del logo */
+            border-radius: 16px; /* Bordes redondeados modernos */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); /* Sombra sutil y elegante */
+            display: inline-block; /* Se ajusta al tamaño del contenido */
+            margin-bottom: 30px; /* Separación con el texto inferior */
+            
+            /* La animación de pulso se aplica ahora al contenedor completo */
             animation: pulse 2s infinite ease-in-out;
         }
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+        
+        /* Estilo de la imagen del logo */
+        .logo {
+            width: 160px; /* Tamaño ajustado para buena visibilidad */
+            height: auto;
+            display: block; /* Evita márgenes extraños */
         }
-        .loader-text { font-size: 1.1rem; color: #666; margin-top: 10px; }
+
+        /* Animación de pulso mejorada para el contenedor */
+        @keyframes pulse {
+            0% { transform: scale(0.98); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+            50% { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+            100% { transform: scale(0.98); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        }
+
+        .loader-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 10px;
+            color: #555;
+        }
+
         .fallback-link {
             margin-top: 30px;
-            font-size: 0.9rem;
-            color: #0084ff;
+            font-size: 1rem;
+            color: #007bff;
             text-decoration: none;
-            display: none;
+            display: none; /* Se oculta inicialmente */
+            font-weight: 500;
+            transition: color 0.2s;
         }
+        
+        .fallback-link:hover {
+            text-decoration: underline;
+        }
+
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #0084ff;
+            border-top: 3px solid #007bff;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
             display: inline-block;
-            margin-left: 10px;
+            margin-left: 12px;
             vertical-align: middle;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="nuevo-logo.png" alt="Carmay Outfit" class="logo">
-        <div class="loader-text">
-            Conectando con Facebook <div class="spinner"></div>
+        <div class="logo-container">
+            <img src="nuevo-logo.png" alt="Carmay Outfit Logo" class="logo">
         </div>
+        
+        <div class="loader-text">
+            Abriendo Carmay Outfit... <div class="spinner"></div>
+        </div>
+        
         <a id="fallback" href="https://www.facebook.com/carmayoutfittiendaonline" class="fallback-link">
-            ¿No fuiste redirigido? Haz clic aquí
+            ¿No fuiste redirigido? Pulsa aquí para entrar
         </a>
     </div>
 
     <script>
-        // Usamos el ID directamente para máxima velocidad en todos los dispositivos
+        // Usamos el ID directamente para máxima velocidad y compatibilidad
         const fbPageId = "620594891148253";
         const webUrl = "https://www.facebook.com/carmayoutfittiendaonline";
         
-        // Protocolo universal basado en ID
+        // Protocolo universal basado en ID para abrir la App
         const appUrl = "fb://page/" + fbPageId;
 
         const fallbackBtn = document.getElementById('fallback');
         let redirectTriggered = false;
 
-        // Intentar apertura directa
+        // 1. Intentar apertura directa de la App
         window.location.href = appUrl;
 
-        // Botón de auxilio (3s)
+        // 2. Mostrar botón de ayuda si tarda más de 3s
         setTimeout(() => {
             fallbackBtn.style.display = 'inline-block';
         }, 3000);
 
-        // Fallback a web (2s)
+        // 3. Fallback automático a la versión web si sigue en la página tras 2s
         const timeout = setTimeout(() => {
+            // Si la página sigue visible, asumimos que la app no abrió
             if (!document.hidden && !redirectTriggered) {
                 window.location.href = webUrl;
             }
         }, 2000);
 
+        // 4. Listener de visibilidad para cancelar el fallback si la app se abre
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) {
                 clearTimeout(timeout);
