@@ -1,31 +1,41 @@
 export default function handler(req, res) {
-  // Configuración de CORS (Importante para que no rechace la petición desde el navegador)
+  // 1. Configuración CORS (Permite que tu web envíe datos al backend)
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
-  
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Si es una petición de prueba del navegador (OPTIONS), respondemos OK y salimos.
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
   try {
-    // 1. CORRECCIÓN DEL ERROR:
-    // Verificamos si req.body ya es un objeto (lo cual Vercel hace auto) o si es string.
+    // === EL FIX CRÍTICO ===
+    // Preguntamos: ¿req.body es texto? Si sí, parseealo.
+    // ¿No es texto? (entonces ya es objeto), úsalo directamente.
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
-    // 2. Extracción segura (Manejamos 'tipo' o 'status' para evitar fallos si cambias el frontend)
-    // Nota: En el frontend enviamos { status: 'NUEVO' } o { tipo: 'NUEVO' }. Esto cubre ambos.
-    const tipoCliente = body.tipo || body.status || 'DESCONOCIDO';
+    // Extraemos el dato con seguridad (usamos || para evitar fallos si viene vacío)
+    const tipo = body.status || body.tipo || 'DESCONOCIDO';
+    const ip = req.headers['x-forwarded-for'] || 'IP_Anonima';
+    const userAgent = req.headers['user-agent'] || 'Desconocido';
 
-    // 3. Log en consola
-    const ip = req.headers['x-forwarded-for'] || 'IP_Oculta';
-    console.log(`[QR SCAN] Cliente: ${tipoCliente} - IP: ${ip}`);
+    // 2. LOG (Esto es lo que verás en Vercel)
+    // Usamos JSON.stringify para que el log sea legible y estructurado
+    console.log(JSON.stringify({
+      level: 'INFO',
+      event: 'QR_SCAN',
+      cliente: tipo,
+      ip: ip,
+      ua: userAgent
+    }));
 
-    // 4. Respuesta Exitosa
-    res.status(200).json({ ok: true });
+    // 3. Respuesta rápida
+    return res.status(200).json({ success: true });
 
   } catch (error) {
-    // Si algo falla, lo registramos pero no rompemos nada crítico
-    console.error('Error procesando log:', error);
-    res.status(500).json({ error: 'Error interno' });
+    // Si falla, registramos el error pero no rompemos la ejecución visual del usuario
+    console.error('Error en log:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
